@@ -9,9 +9,28 @@ import java.util.regex.PatternSyntaxException;
 
 public final class APIConfigurationReader {
 
+    /**
+     * String representing the delimiter that should be used, when passing values to Configuration Options
+     * fields, inside the Configuration File.
+     * <p>
+     * ex: host -> "some value here"
+     */
     private static final String DELIMITER = "->";
+    /**
+     * Object representing {@link APIConfigurationReader} instance.
+     */
     private static APIConfigurationReader instance;
+
+    /**
+     * String used to specify the path to the Configuration Options file.
+     */
     private final String pathToConfFile;
+
+    /**
+     * Class's static attribute to keep loaded all the {@link ConfigurationOptions} values.
+     * Used to compare with the values read from the Configuration Options file.
+     * (Check {@link #getConfigurations()} method).
+     */
     private static Map<String, ConfigurationOptions> confParameter;
 
     static {
@@ -95,9 +114,9 @@ public final class APIConfigurationReader {
      * It compares each element read to {@link #confParameter} entries. Everytime it fails to map
      * the String read to an entry, it adds a NULL reference, i.e.
      * <p>
-     *      |-(String matched) --------> ({@link #confParameter} entry equivalent)
-     * map -|-(String that failed) ----> null
-     *      (...)
+     *           |-(String matched) --------> ({@link #confParameter} entry equivalent)
+     *      map -|-(String that failed) ----> null
+     *          (...)
      *
      * @return HashMap structure containing every #ConfigurationOptions found.
      */
