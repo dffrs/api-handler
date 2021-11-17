@@ -15,7 +15,7 @@ public final class APIConfigurationReader {
     private static Map<String, ConfigurationOptions> confParameter;
 
     static {
-        APIConfigurationReader.confParameter = new HashMap<String, ConfigurationOptions>();
+        APIConfigurationReader.confParameter = new HashMap<>();
         loadConfigurationParameters();
     }
 
@@ -34,9 +34,9 @@ public final class APIConfigurationReader {
         HEADER("header"),
         ENDPOINT("endpoint");
 
-        private String confIdentifier;
+        private final String confIdentifier;
 
-        private ConfigurationOptions(String id) {
+        ConfigurationOptions(String id) {
             this.confIdentifier = id;
         }
 
@@ -102,9 +102,9 @@ public final class APIConfigurationReader {
      * @return HashMap structure containing every #ConfigurationOptions found.
      */
     public Map<String, String> getConfigurations() {
-        Map<String, String> aux = new HashMap<String, String>();
+        Map<String, String> aux = new HashMap<>();
         try (Scanner scanner = new Scanner(new File(this.pathToConfFile))) {
-            String temp = "";
+            String temp;
             String[] array;
             while (scanner.hasNext()) {
                 temp = scanner.nextLine().replaceAll(" ", "");
