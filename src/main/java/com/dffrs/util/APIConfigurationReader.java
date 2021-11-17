@@ -101,7 +101,7 @@ public final class APIConfigurationReader {
      *
      * @return HashMap structure containing every #ConfigurationOptions found.
      */
-    public Map<String, String> getConfigurations() {
+    public Map<String, String> getConfigurations() throws FileNotFoundException {
         Map<String, String> aux = new HashMap<>();
         try (Scanner scanner = new Scanner(new File(this.pathToConfFile))) {
             String temp;
@@ -120,10 +120,10 @@ public final class APIConfigurationReader {
                 }
             }
         } catch (FileNotFoundException e) {
-            System.err.println("ERROR: File not found. PATH -> " + this.pathToConfFile + "\n");
+            throw new FileNotFoundException("ERROR: File not found. PATH -> " + this.pathToConfFile + "\n");
         } catch (PatternSyntaxException e) {
-            System.err.println("ERROR: Problem splitting info from the specified File." +
-                    " Use " + DELIMITER + " to separate the API Configuration Options.\n");
+            throw new PatternSyntaxException("ERROR: Problem splitting info from the specified File." +
+                    " Use " + DELIMITER + " to separate the API Configuration Options.", e.getPattern(), e.getIndex());
         }
         if (aux.isEmpty())
             throw new IllegalStateException("ERROR: Configuration Options not detected inside specified file.\n");

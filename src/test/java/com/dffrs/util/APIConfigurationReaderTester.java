@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
@@ -17,6 +18,7 @@ public class APIConfigurationReaderTester {
     String normalPath = "";
     String missingParametersPath = "";
     String emptyParametersPath = "";
+    String nonExistingPath = "someFileThatDoesNotExist.txt";
 
     @Before
     public void init() throws URISyntaxException {
@@ -34,21 +36,32 @@ public class APIConfigurationReaderTester {
     }
 
     @Test
-    public void getConfigurationsTest() {
+    public void getConfigurationsTest() throws FileNotFoundException {
         Map<String, String> aux = reader.getConfigurations();
         Assert.assertFalse(aux.isEmpty());
     }
 
     @Test
-    public void getConfigurationsWithMissingParametersTest() {
+    public void getConfigurationsWithMissingParametersTest() throws FileNotFoundException {
         reader = APIConfigurationReader.getInstance(missingParametersPath);
         Map<String, String> auxWithNULLValues = reader.getConfigurations();
         Assert.assertTrue(auxWithNULLValues.size() != APIConfigurationReader.getConfigurationsParameters().size());
     }
 
     @Test(expected = IllegalStateException.class)
-    public void getConfigurationsWithEmptyFileTest() {
+    public void getConfigurationsWithEmptyFileTest() throws FileNotFoundException {
         reader = APIConfigurationReader.getInstance(emptyParametersPath);
         Map<String, String> aux = reader.getConfigurations();
+    }
+
+    @Test(expected = FileNotFoundException.class)
+    public void getConfigurationWithNonExistingFileTest() throws FileNotFoundException {
+        reader = APIConfigurationReader.getInstance(nonExistingPath);
+        Map<String, String> aux = reader.getConfigurations();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getConfigurationWithEmptyPathTest() {
+        reader = APIConfigurationReader.getInstance("");
     }
 }
