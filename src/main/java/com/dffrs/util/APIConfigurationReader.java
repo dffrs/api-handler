@@ -5,19 +5,25 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.PatternSyntaxException;
 
 public final class APIConfigurationReader {
 
     private static final String DELIMITER = "->";
     private static APIConfigurationReader instance;
     private final String pathToConfFile;
-    private Map<String, ConfigurationOptions> confParameter;
+    private static Map<String, ConfigurationOptions> confParameter;
+
+    static {
+        APIConfigurationReader.confParameter = new HashMap<String, ConfigurationOptions>();
+        loadConfigurationParameters();
+    }
 
     /**
      * Private Enumerator to list all possible configuration options, that could be specified
      * inside an API configuration file.
      * If, later on, for some reason, new options need to be added, make sure it is defined here, first.
-     *
+     * <p>
      * Each Configuration Option has an id, which is used to get identified when {@link #getConfigurations()}
      * is called.
      */
@@ -49,19 +55,15 @@ public final class APIConfigurationReader {
         if (pathToConfFile.isEmpty())
             throw new IllegalArgumentException("ERROR: Path to Configuration File does not exist.(Empty Argument)\n");
         this.pathToConfFile = pathToConfFile;
-        this.confParameter = new HashMap<String, ConfigurationOptions>();
-
-        // Load configuration options.
-        loadConfigurationParameters();
     }
 
     /**
      * Private procedure to load all configuration options, i.e. #ConfigurationOptions.values(),
      * and map them to {@link #confParameter}.
      */
-    private void loadConfigurationParameters() {
+    private static void loadConfigurationParameters() {
         for (ConfigurationOptions co : ConfigurationOptions.values()) {
-            this.confParameter.put(co.getConfIdentifier(), co);
+            APIConfigurationReader.confParameter.put(co.getConfIdentifier(), co);
         }
     }
 
@@ -72,28 +74,19 @@ public final class APIConfigurationReader {
      * @return #APIConfigurationReader instance.
      */
     public static APIConfigurationReader getInstance(String pathToConfFile) {
-        if (instance == null)
+        if (instance == null || !instance.pathToConfFile.equals(pathToConfFile))
             instance = new APIConfigurationReader(pathToConfFile);
         return instance;
     }
 
     /**
-     * Public method to return all configuration parameters, i.e. Configuration options
+     * Public static method to return all configuration parameters, i.e. Configuration options
      * and their ids.
      *
      * @return HashMap structure with all configuration parameters loaded. (See {@link #loadConfigurationParameters()}).
      */
-    public Map<String, ConfigurationOptions> getConfigurationsParameters() {
-        return confParameter;
-    }
-
-    /**
-     * Public method to return all Default Global Configurations available.(See #ConfigurationOptions).
-     *
-     * @return #ConfigurationOptions array with all options.
-     */
-    public ConfigurationOptions[] getGlobalConfigurations(){
-        return ConfigurationOptions.values();
+    public static Map<String, ConfigurationOptions> getConfigurationsParameters() {
+        return APIConfigurationReader.confParameter;
     }
 
     /**
@@ -101,7 +94,7 @@ public final class APIConfigurationReader {
      * given when {@link APIConfigurationReader} instance was created.
      * It compares each element read to {@link #confParameter} entries. Everytime it fails to map
      * the String read to an entry, it adds a NULL reference, i.e.
-     *
+     * <p>
      *      |-(String matched) --------> ({@link #confParameter} entry equivalent)
      * map -|-(String that failed) ----> null
      *      (...)
@@ -114,18 +107,23 @@ public final class APIConfigurationReader {
             String temp = "";
             String[] array;
             while (scanner.hasNext()) {
-                temp = scanner.nextLine();
-                array = temp.split(DELIMITER);
-                if (confParameter.containsKey(array[0])) {
-                    aux.put(array[0], array[1]);
-                } else {
-                    // Everytime a configuration option is not recognised inside the file, it will be
-                    // associated with a NULL Reference
-                    aux.put(array[0], null);
+                temp = scanner.nextLine().replaceAll(" ", "");
+                if (!temp.isEmpty()) {
+                    array = temp.split(DELIMITER);
+                    if (APIConfigurationReader.confParameter.containsKey(array[0])) {
+                        aux.put(array[0], array[1]);
+                    } else {
+                        // Everytime a configuration option is not recognised inside the file, it will be
+                        // associated with a NULL Reference
+                        aux.put(array[0], null);
+                    }
                 }
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("ERROR: File not found. PATH -> " + this.pathToConfFile + "\n");
+        } catch (PatternSyntaxException e) {
+            System.err.println("ERROR: Problem splitting info from the specified File." +
+                    " Use " + DELIMITER + " to separate the API Configuration Options.\n");
         }
         if (aux.isEmpty())
             throw new IllegalStateException("ERROR: Configuration Options not detected inside specified file.\n");

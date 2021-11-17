@@ -9,25 +9,35 @@ import java.net.URL;
 import java.util.Map;
 
 public class APIConfigurationReaderTester {
-    URL is = getClass().getResource("/testFile.txt");
+    URL testFile = getClass().getResource("/testFile.txt");
+    URL testFileWithMissingParameters = getClass().getResource("/testFileWithMissingParameters.txt");
     APIConfigurationReader reader;
-    String path = "";
+    String normalPath = "";
+    String missingParametersPath = "";
 
     @Before
     public void init() throws URISyntaxException {
-        path = is.toURI().getPath();
-        reader = APIConfigurationReader.getInstance(path);
+        normalPath = testFile.toURI().getPath();
+        missingParametersPath = testFileWithMissingParameters.toURI().getPath();
+        reader = APIConfigurationReader.getInstance(normalPath);
     }
 
     @Test
-    public void getConfigurationParametersTest(){
-        for(Object co : reader.getGlobalConfigurations())
-            Assert.assertTrue(reader.getConfigurationsParameters().containsValue(co));
+    public void getConfigurationParametersLoadConfirmationTest(){
+        for(Object co : APIConfigurationReader.getConfigurationsParameters().values())
+            Assert.assertNotNull(co);
     }
 
     @Test
     public void getConfigurationsTest(){
         Map<String, String> aux = reader.getConfigurations();
         Assert.assertFalse(aux.isEmpty());
+    }
+
+    @Test
+    public void getConfigurationsWithMissingParametersTest(){
+        reader = APIConfigurationReader.getInstance(missingParametersPath);
+        Map<String, String> auxWithNULLValues = reader.getConfigurations();
+        Assert.assertTrue(auxWithNULLValues.size() != APIConfigurationReader.getConfigurationsParameters().size());
     }
 }
