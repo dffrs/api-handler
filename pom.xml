@@ -23,6 +23,14 @@
       <artifactId>unirest-java</artifactId>
       <version>1.4.9</version>
     </dependency>
+
+    <!-- ADDED -->
+    <dependency>
+      <groupId>com.dffrs.memory</groupId>
+      <artifactId>cache</artifactId>
+      <version>1.0</version>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
