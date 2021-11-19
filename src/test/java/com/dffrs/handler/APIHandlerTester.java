@@ -54,4 +54,25 @@ public class APIHandlerTester {
 
         Assert.assertNotNull(response);
     }
+
+    @Test
+    public void makeAPICallWithNoParametersWithCacheTest() throws UnirestException {
+        List<String> valuesList = List.of("P0001");
+        HttpResponse<JsonNode> response;
+        HttpResponse<JsonNode> response2;
+        HttpResponse<JsonNode> response3;
+
+        // First call
+        response = handler.makeAPIRequest(new APIHandler.Request(null, valuesList));
+
+        // Second call
+        response2 = handler.makeAPIRequest(new APIHandler.Request(null, valuesList));
+
+        // Third call
+        response3 = handler.makeAPIRequest(new APIHandler.Request(null, List.of("P0002")));
+
+        Assert.assertEquals(response, response2);
+        Assert.assertNotEquals(response, response3);
+
+    }
 }

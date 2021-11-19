@@ -1,5 +1,6 @@
 package com.dffrs.handler;
 
+import com.dffrs.memory.inMemoryCache.LRUCache;
 import com.dffrs.util.APIConfigurationReader;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -18,6 +19,9 @@ public final class APIHandler {
     private static APIHandler instance;
     private static String CONF_FILE;
     private Map<String, String> configurations;
+    private static final LRUCache<String, HttpResponse<JsonNode>> cache;
+
+    private static final int INITIAL_VALUE_FOR_CACHE = 5;
 
     static {
         try {
@@ -27,6 +31,8 @@ public final class APIHandler {
         } catch (NullPointerException e) {
             throw new NullPointerException("ERROR: Configuration Option file not found.\n");
         }
+
+        cache = new LRUCache<>(INITIAL_VALUE_FOR_CACHE);
     }
 
     public static class Request {
@@ -108,15 +114,20 @@ public final class APIHandler {
         return configurations.get(option);
     }
 
-    public HttpResponse<JsonNode> makeAPIRequest(APIHandler.Request r) throws UnirestException {
+    public HttpResponse<JsonNode> makeAPIRequest(APIHandler.Request request) throws UnirestException {
         // https://car-code.p.rapidapi.com/obd2/P0001
         String apiCall = getAPIParameterBy("host")+"/"+getAPIParameterBy("endpoint")+"/"
-                + r.getQuery();
+                + request.getQuery();
 
-        return Unirest.get(apiCall)
-                .header(getAPIParameterBy("header"), getAPIParameterBy("rapid_api_host"))
-                .header(getAPIParameterBy("header1"), getAPIParameterBy("rapid_api_key"))
-                .asJson();
+        HttpResponse<JsonNode> r = cache.get(apiCall);
+        if(r == null) { // This means the cache has no record of that request.
+            r = Unirest.get(apiCall)
+                    .header(getAPIParameterBy("header"), getAPIParameterBy("rapid_api_host"))
+                    .header(getAPIParameterBy("header1"), getAPIParameterBy("rapid_api_key"))
+                    .asJson();
+            cache.addElement(apiCall, r);
+        }
+        return r;
     }
 
     public static APIHandler getInstance(){
