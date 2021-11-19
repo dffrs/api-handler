@@ -125,12 +125,19 @@ public final class APIConfigurationReader {
         try (Scanner scanner = new Scanner(new File(this.pathToConfFile))) {
             String temp;
             String[] array;
+            int i = 1;
             while (scanner.hasNext()) {
                 temp = scanner.nextLine().replaceAll(" ", "");
                 if (!temp.isEmpty()) {
                     array = temp.split(DELIMITER);
                     if (APIConfigurationReader.confParameter.containsKey(array[0])) {
-                        aux.put(array[0], array[1]);
+                        // Temp solution. If map already contains one, add another with "name"+1.
+                        if (aux.containsKey(array[0])) {
+                            aux.put(array[0] + i, array[1]);
+                            i++;
+                        } else {
+                            aux.put(array[0], array[1]);
+                        }
                     } else {
                         // Everytime a configuration option is not recognised inside the file, it will be
                         // associated with a NULL Reference

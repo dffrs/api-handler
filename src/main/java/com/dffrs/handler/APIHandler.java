@@ -122,6 +122,7 @@ public final class APIHandler {
         String api_host = getAPIParameterBy("rapid_api_host");
         String api_key = getAPIParameterBy("rapid_api_key");
         String header = getAPIParameterBy("header");
+        String header1 = getAPIParameterBy("header1");
         String endpoint = getAPIParameterBy("endpoint");
         // String query = prepareQuery(paramaters, values);
 
@@ -132,7 +133,7 @@ public final class APIHandler {
 
         HttpResponse<JsonNode> request = Unirest.get(apiCall)
                 .header(header, api_host)
-                .header("x-rapidapi-key", api_key)
+                .header(header1, api_key)
                 .asJson();
         return request;
     }
