@@ -47,7 +47,7 @@ public class APIHandlerTester {
 
     @Test
     public void makeAPICallWithNoParametersTest() throws UnirestException {
-        List<String> valuesList = List.of("POOO1");
+        List<String> valuesList = List.of("P0001");
         HttpResponse<JsonNode> response;
 
         response = handler.makeAPIRequest(new APIHandler.Request(null, valuesList));

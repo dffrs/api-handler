@@ -67,7 +67,7 @@ public final class APIHandler {
 
             String query = "";
             for (int i = 0; i != params.size(); i ++) {
-                query += (encodeString(params.get(i), values.get(i)) + "&");
+                query = query.concat( encodeString(params.get(i), values.get(i)) + "&");
             }
             return query.substring(0, query.length() - 1);
         }
@@ -109,24 +109,14 @@ public final class APIHandler {
     }
 
     public HttpResponse<JsonNode> makeAPIRequest(APIHandler.Request r) throws UnirestException {
-        String host = getAPIParameterBy("host");
-        String api_host = getAPIParameterBy("rapid_api_host");
-        String api_key = getAPIParameterBy("rapid_api_key");
-        String header = getAPIParameterBy("header");
-        String header1 = getAPIParameterBy("header1");
-        String endpoint = getAPIParameterBy("endpoint");
-        // String query = prepareQuery(paramaters, values);
-
-        //TODO: Hardcode just to test the connection to an API Service
         // https://car-code.p.rapidapi.com/obd2/P0001
-        String value = "P0001";
-        String apiCall = host+"/"+endpoint+"/"+value;
+        String apiCall = getAPIParameterBy("host")+"/"+getAPIParameterBy("endpoint")+"/"
+                + r.getQuery();
 
-        HttpResponse<JsonNode> request = Unirest.get(apiCall)
-                .header(header, api_host)
-                .header(header1, api_key)
+        return Unirest.get(apiCall)
+                .header(getAPIParameterBy("header"), getAPIParameterBy("rapid_api_host"))
+                .header(getAPIParameterBy("header1"), getAPIParameterBy("rapid_api_key"))
                 .asJson();
-        return request;
     }
 
     public static APIHandler getInstance(){
