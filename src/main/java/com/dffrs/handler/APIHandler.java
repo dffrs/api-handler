@@ -19,8 +19,18 @@ public final class APIHandler {
     private static final Charset CHARSET = StandardCharsets.UTF_8;
     private static APIHandler instance;
     private static String CONF_FILE;
+    private Map<String, String> configurations;
 
-    // TODO: Create an internal class to represent the different type of API Requests
+    static {
+        try {
+            CONF_FILE = ((URL) APIHandler.class.getResource("/configFile.txt")).toURI().getPath();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            throw new NullPointerException("ERROR: Configuration Option file not found.\n");
+        }
+    }
+
     public static class Request {
 
         private final List<String> params;
@@ -61,7 +71,7 @@ public final class APIHandler {
         //TODO: TEST
         private String prepareQuery(List<String> params, List<String> values) throws NullPointerException,
                 IllegalStateException{
-            
+
             if (values == null) {
                 throw new NullPointerException();
             }
@@ -80,25 +90,10 @@ public final class APIHandler {
         }
     }
 
-    static {
-        try {
-            CONF_FILE = ((URL) APIHandler.class.getResource("/configFile.txt")).toURI().getPath();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            throw new NullPointerException("ERROR: Configuration Option file not found.\n");
-        }
-    }
-
-    private APIConfigurationReader reader;
-    private Map<String, String> configurations;
-
     private void initReader() {
-        reader = APIConfigurationReader.getInstance(CONF_FILE);
         try {
-            configurations = reader.getConfigurations();
+            configurations = APIConfigurationReader.getInstance(CONF_FILE).getConfigurations();
         } catch (FileNotFoundException e) {
-            reader = null;
             configurations = null;
             instance = null;
         }
@@ -108,6 +103,14 @@ public final class APIHandler {
         initReader();
     }
 
+    /**
+     * Public method to return an API's parameter.
+     * It uses {@link #configurations} HashMap as reference to return the value.
+     * NOTE: It may return a NULL Reference, if the option is not found.
+     *
+     * @param option String to search for.
+     * @return String representing the parameter's value.
+     */
     public String getAPIParameterBy(String option) {
         if (option == null)
             throw new IllegalArgumentException("ERROR: Option can not be empty.\n");
@@ -116,7 +119,6 @@ public final class APIHandler {
         return configurations.get(option);
     }
 
-    //TODO: TEST
     public HttpResponse<JsonNode> makeAPIRequest(APIHandler.Request r) throws UnirestException {
         String host = getAPIParameterBy("host");
         String api_host = getAPIParameterBy("rapid_api_host");
