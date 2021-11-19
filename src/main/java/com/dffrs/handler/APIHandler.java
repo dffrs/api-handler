@@ -17,12 +17,32 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class APIHandler {
+    /**
+     * Charset used when encoding.
+     */
     private static final Charset CHARSET = StandardCharsets.UTF_8;
+    /**
+     * Instance of {@link APIHandler}, based on Singleton Code Design.
+     */
     private static APIHandler instance;
+    /**
+     * Path to the API Configuration Options file.
+     */
     private static String CONF_FILE;
+    /**
+     * Map used to keep all the API Configuration Options loaded in memory.
+     * Used in {@link #getAPIParameterBy(String)} method.
+     */
     private Map<String, String> configurations;
+    /**
+     * In memory type of cache to stored recently API call requests.
+     * Used in {@link #makeAPIRequest(Request)} method.
+     */
     private static final LRUCache<String, HttpResponse<JsonNode>> cache;
 
+    /**
+     * Integer to define the number of occurrences the {@link #cache} should keep.
+     */
     private static final int INITIAL_VALUE_FOR_CACHE = 5;
 
     static {
@@ -37,10 +57,24 @@ public final class APIHandler {
         cache = new LRUCache<>(INITIAL_VALUE_FOR_CACHE);
     }
 
+    /**
+     * Nested class responsible for creating an encoded UTF-8 URL query, used whenever an API Call is made.
+     */
     public static class Request {
-
+        /**
+         * String representing the final query, after being formatted based on UTF-8 Standard.
+         */
         private final String query;
 
+        /**
+         * Constructor responsible to create a Request instance. It behaves different if it is desired to
+         * specify the params to URL query.
+         * If params is a NULL Reference, it, only, encodes the values's first element, otherwise it encodes
+         * all params and values elements.
+         *
+         * @param params List containing all params needed for the URL.
+         * @param values List containing all the elements to match the params's.
+         */
         public Request(final List<String> params, final List<String> values) {
 
             // This option means the were no params
@@ -58,10 +92,25 @@ public final class APIHandler {
             }
         }
 
+        /**
+         * Public method responsible to return the final URL query.
+         *
+         * @return String representing the query.
+         */
         public String getQuery() {
             return query;
         }
 
+        /**
+         * Private method, used in {@link #Request(List, List)}, to create and prepare the URL query.
+         *
+         * @param params List containing all params needed for the URL.
+         * @param values List containing all the elements to match the params's.
+         * @return String representing the final and encoded query, ready to be used.
+         *
+         * @throws NullPointerException everytime the Values List is a NULL Reference.
+         * @throws IllegalArgumentException everytime the Params List's and Values List's sizes are different.
+         */
         private String prepareQuery(List<String> params, List<String> values) throws NullPointerException,
                 IllegalStateException {
 
@@ -80,6 +129,13 @@ public final class APIHandler {
             return query.substring(0, query.length() - 1);
         }
 
+        /**
+         * Private method to do the actual URL query encoding. Used inside {@link #prepareQuery(List, List)}.
+         *
+         * @param param String representing the param to match the future encoded value.
+         * @param value String representing the value to encode.
+         * @return String with param and value encoded.
+         */
         private String encodeString(String param, String value) {
             // Check to see if parameters, also, need to be encoded.
             // They dont...
@@ -87,6 +143,11 @@ public final class APIHandler {
         }
     }
 
+    /**
+     * Private method responsible to initiate {@link #configurations}, based on
+     * APIConfigurationReader.getConfigurations() map.
+     * Used in {@link #APIHandler()}.
+     */
     private void initReader() {
         try {
             configurations = APIConfigurationReader.getInstance(CONF_FILE).getConfigurations();
