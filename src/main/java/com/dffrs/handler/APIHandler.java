@@ -7,9 +7,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -23,7 +21,7 @@ public final class APIHandler {
 
     static {
         try {
-            CONF_FILE = ((URL) APIHandler.class.getResource("/configFile.txt")).toURI().getPath();
+            CONF_FILE = Objects.requireNonNull(APIHandler.class.getResource("/configFile.txt")).toURI().getPath();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
@@ -33,16 +31,13 @@ public final class APIHandler {
 
     public static class Request {
 
-        private final List<String> params;
-        private final List<String> values;
-        private String query;
+        private final String query;
 
-        public Request(List<String> params, List<String> values) {
-            this.params = new ArrayList<>();
-            this.values = new ArrayList<>();
+        public Request(final List<String> params, final List<String> values) {
 
             // This option means the were no params
             if (params == null) {
+                // TODO: For now, this only utilizes the first element inside values's List.
                 query = String.format(values.get(0), URLEncoder.encode((values.get(0)), CHARSET));
             } else {
                 try {
@@ -59,16 +54,6 @@ public final class APIHandler {
             return query;
         }
 
-        //TODO: TEST
-        private String encodeString(String param, String value)  {
-            //TODO: Check to see if parameters, also, need to be encoded.
-            // They dont...
-            String temp = param +"="+(URLEncoder.encode(value, CHARSET));
-            // String temp = (URLEncoder.encode(param +"="+value, CHARSET));
-            return temp;
-        }
-
-        //TODO: TEST
         private String prepareQuery(List<String> params, List<String> values) throws NullPointerException,
                 IllegalStateException{
 
@@ -82,11 +67,15 @@ public final class APIHandler {
 
             String query = "";
             for (int i = 0; i != params.size(); i ++) {
-                String tempParams = params.get(i);
-                String tempValues = values.get(i);
-                query += (encodeString(tempParams, tempValues) + "&");
+                query += (encodeString(params.get(i), values.get(i)) + "&");
             }
             return query.substring(0, query.length() - 1);
+        }
+
+        private String encodeString(String param, String value)  {
+            // Check to see if parameters, also, need to be encoded.
+            // They dont...
+            return param +"="+(URLEncoder.encode(value, CHARSET));
         }
     }
 
