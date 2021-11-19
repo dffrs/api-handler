@@ -12,7 +12,9 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public final class APIHandler {
     private static final Charset CHARSET = StandardCharsets.UTF_8;
@@ -61,7 +63,7 @@ public final class APIHandler {
         }
 
         private String prepareQuery(List<String> params, List<String> values) throws NullPointerException,
-                IllegalStateException{
+                IllegalStateException {
 
             if (values == null) {
                 throw new NullPointerException();
@@ -72,16 +74,16 @@ public final class APIHandler {
             }
 
             String query = "";
-            for (int i = 0; i != params.size(); i ++) {
-                query = query.concat( encodeString(params.get(i), values.get(i)) + "&");
+            for (int i = 0; i != params.size(); i++) {
+                query = query.concat(encodeString(params.get(i), values.get(i)) + "&");
             }
             return query.substring(0, query.length() - 1);
         }
 
-        private String encodeString(String param, String value)  {
+        private String encodeString(String param, String value) {
             // Check to see if parameters, also, need to be encoded.
             // They dont...
-            return param +"="+(URLEncoder.encode(value, CHARSET));
+            return param + "=" + (URLEncoder.encode(value, CHARSET));
         }
     }
 
@@ -116,11 +118,11 @@ public final class APIHandler {
 
     public HttpResponse<JsonNode> makeAPIRequest(APIHandler.Request request) throws UnirestException {
         // https://car-code.p.rapidapi.com/obd2/P0001
-        String apiCall = getAPIParameterBy("host")+"/"+getAPIParameterBy("endpoint")+"/"
+        String apiCall = getAPIParameterBy("host") + "/" + getAPIParameterBy("endpoint") + "/"
                 + request.getQuery();
 
         HttpResponse<JsonNode> r = cache.get(apiCall);
-        if(r == null) { // This means the cache has no record of that request.
+        if (r == null) { // This means the cache has no record of that request.
             r = Unirest.get(apiCall)
                     .header(getAPIParameterBy("header"), getAPIParameterBy("rapid_api_host"))
                     .header(getAPIParameterBy("header1"), getAPIParameterBy("rapid_api_key"))
@@ -130,7 +132,7 @@ public final class APIHandler {
         return r;
     }
 
-    public static APIHandler getInstance(){
+    public static APIHandler getInstance() {
         if (instance == null)
             instance = new APIHandler();
         return instance;
