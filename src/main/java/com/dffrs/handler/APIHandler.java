@@ -188,12 +188,12 @@ public final class APIHandler {
      */
     public HttpResponse<JsonNode> makeAPIRequest(APIHandler.Request request) throws UnirestException {
         // https://car-code.p.rapidapi.com/obd2/P0001
-        String apiCall = getAPIParameterBy("host") + "/" + getAPIParameterBy("endpoint") + "/"
+        String apiCall = getAPIParameterBy("endpoint") + "/"
                 + request.getQuery();
 
         HttpResponse<JsonNode> r = cache.get(apiCall);
         if (r == null) { // This means the cache has no record of that request.
-            r = Unirest.get(apiCall)
+            r = Unirest.get(getAPIParameterBy("host") + "/" + apiCall)
                     .header(getAPIParameterBy("header"), getAPIParameterBy("rapid_api_host"))
                     .header(getAPIParameterBy("header1"), getAPIParameterBy("rapid_api_key"))
                     .asJson();
