@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.PatternSyntaxException;
 
 public final class APIHandler {
     /**
@@ -47,7 +48,7 @@ public final class APIHandler {
 
     static {
         try {
-            CONF_FILE = Objects.requireNonNull(APIHandler.class.getResource("/configFile.txt")).toURI().getPath();
+            CONF_FILE = Objects.requireNonNull(APIHandler.class.getResource("/config.handler")).toURI().getPath();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
@@ -151,7 +152,19 @@ public final class APIHandler {
     private void initReader() {
         try {
             configurations = APIConfigurationReader.getInstance(CONF_FILE).getConfigurations();
-        } catch (FileNotFoundException e) {
+
+        } catch (FileNotFoundException | PatternSyntaxException | ArrayIndexOutOfBoundsException e) {
+            String message;
+            if (e.getClass().equals(FileNotFoundException.class))
+                message = "ERROR: Configuration Options File was not found. " +
+                        "Check " + CONF_FILE;
+            else if (e.getClass().equals(ArrayIndexOutOfBoundsException.class))
+                message = "ERROR: Configuration Options File have parameters with empty values. " +
+                        "Check " + CONF_FILE;
+                else
+                    message = "ERROR: Configuration Options File uses the wrong delimiter. " +
+                            "Check " +APIConfigurationReader.DELIMITER + " and " + CONF_FILE;
+            System.err.println(message + "\n\n" + e.getClass()+": "+e.getMessage());
             configurations = null;
             instance = null;
         }

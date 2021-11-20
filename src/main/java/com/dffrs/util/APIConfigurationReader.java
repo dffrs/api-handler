@@ -15,7 +15,7 @@ public final class APIConfigurationReader {
      * <p>
      * ex: host -> "some value here"
      */
-    private static final String DELIMITER = "->";
+    public static final String DELIMITER = "->";
     /**
      * Object representing {@link APIConfigurationReader} instance.
      */
@@ -121,7 +121,8 @@ public final class APIConfigurationReader {
      * @return HashMap structure containing every #ConfigurationOptions found.
      * @throws FileNotFoundException Whenever the Configuration Options file was not found.
      */
-    public Map<String, String> getConfigurations() throws FileNotFoundException {
+    public Map<String, String> getConfigurations() throws FileNotFoundException, PatternSyntaxException,
+            ArrayIndexOutOfBoundsException {
         Map<String, String> aux = new HashMap<>();
         try (Scanner scanner = new Scanner(new File(this.pathToConfFile))) {
             String temp;
@@ -146,12 +147,8 @@ public final class APIConfigurationReader {
                     }
                 }
             }
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("ERROR: File not found. PATH -> " + this.pathToConfFile + "\n");
-        } catch (PatternSyntaxException e) {
-            throw new PatternSyntaxException("ERROR: Problem splitting info from the specified File." +
-                    " Use " + DELIMITER + " to separate the API Configuration Options.", e.getPattern(), e.getIndex());
         }
+
         if (aux.isEmpty())
             throw new IllegalStateException("ERROR: Configuration Options not detected inside specified file.\n");
         return aux;
