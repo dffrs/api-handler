@@ -183,7 +183,7 @@ public final class APIHandler {
      * It caches the responses, for responsiveness and efficiency sake.
      *
      * @param request APIHandler.Request's instance to retrieve the URL query.
-     * @return HttpResponse<JsonNode> object, after the call was made.
+     * @return HttpResponse object, after the call was made.
      * @throws UnirestException If the call was unsuccessful.
      */
     public HttpResponse<JsonNode> makeAPIRequest(APIHandler.Request request) throws UnirestException {
