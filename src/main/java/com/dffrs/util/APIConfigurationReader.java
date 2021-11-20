@@ -122,7 +122,7 @@ public final class APIConfigurationReader {
      * @throws FileNotFoundException Whenever the Configuration Options file was not found.
      */
     public Map<String, String> getConfigurations() throws FileNotFoundException, PatternSyntaxException,
-            ArrayIndexOutOfBoundsException {
+            ArrayIndexOutOfBoundsException, IllegalStateException {
         Map<String, String> aux = new HashMap<>();
         try (Scanner scanner = new Scanner(new File(this.pathToConfFile))) {
             String temp;
@@ -150,7 +150,7 @@ public final class APIConfigurationReader {
         }
 
         if (aux.isEmpty())
-            throw new IllegalStateException("ERROR: Configuration Options not detected inside specified file.\n");
+            throw new IllegalStateException();
         return aux;
     }
 }

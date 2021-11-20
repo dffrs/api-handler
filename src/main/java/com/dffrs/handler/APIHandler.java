@@ -153,7 +153,8 @@ public final class APIHandler {
         try {
             configurations = APIConfigurationReader.getInstance(CONF_FILE).getConfigurations();
 
-        } catch (FileNotFoundException | PatternSyntaxException | ArrayIndexOutOfBoundsException e) {
+        } catch (FileNotFoundException | PatternSyntaxException | ArrayIndexOutOfBoundsException |
+                 IllegalStateException e) {
             String message;
             if (e.getClass().equals(FileNotFoundException.class))
                 message = "ERROR: Configuration Options File was not found. " +
@@ -161,9 +162,13 @@ public final class APIHandler {
             else if (e.getClass().equals(ArrayIndexOutOfBoundsException.class))
                 message = "ERROR: Configuration Options File have parameters with empty values. " +
                         "Check " + CONF_FILE;
-                else
-                    message = "ERROR: Configuration Options File uses the wrong delimiter. " +
-                            "Check " +APIConfigurationReader.DELIMITER + " and " + CONF_FILE;
+                else if (e.getClass().equals(IllegalStateException.class))
+                    message = "ERROR: Configuration Options not detected inside specified file. " +
+                            "Check " + CONF_FILE;
+                    else
+                        message = "ERROR: Configuration Options File uses the wrong delimiter. " +
+                                "Check " +APIConfigurationReader.DELIMITER + " and " + CONF_FILE;
+
             System.err.println(message + "\n\n" + e.getClass()+": "+e.getMessage());
             configurations = null;
             instance = null;
