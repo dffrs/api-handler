@@ -6,6 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="api-handler-java" />
+        <module name="api-handler" />
         <module name="APIHandler" />
       </profile>
     </annotationProcessing>
