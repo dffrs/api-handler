@@ -177,6 +177,15 @@ public final class APIHandler {
         return configurations.get(option);
     }
 
+    /**
+     * Public method used to make an API Call, based on the {@link #configurations} values, and
+     * APIHandler.Request's query.
+     * It caches the responses, for responsiveness and efficiency sake.
+     *
+     * @param request APIHandler.Request's instance to retrieve the URL query.
+     * @return HttpResponse<JsonNode> object, after the call was made.
+     * @throws UnirestException If the call was unsuccessful.
+     */
     public HttpResponse<JsonNode> makeAPIRequest(APIHandler.Request request) throws UnirestException {
         // https://car-code.p.rapidapi.com/obd2/P0001
         String apiCall = getAPIParameterBy("host") + "/" + getAPIParameterBy("endpoint") + "/"
@@ -193,6 +202,11 @@ public final class APIHandler {
         return r;
     }
 
+    /**
+     * Public Static Factory method to instantiate an {@link APIHandler} object.
+     *
+     * @return #APIConfigurationReader instance.
+     */
     public static APIHandler getInstance() {
         if (instance == null)
             instance = new APIHandler();

@@ -119,6 +119,7 @@ public final class APIConfigurationReader {
      *          (...)
      *
      * @return HashMap structure containing every #ConfigurationOptions found.
+     * @throws FileNotFoundException Whenever the Configuration Options file was not found.
      */
     public Map<String, String> getConfigurations() throws FileNotFoundException {
         Map<String, String> aux = new HashMap<>();
