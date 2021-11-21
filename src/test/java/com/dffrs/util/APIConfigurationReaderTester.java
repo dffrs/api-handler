@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.Map;
 
 public class APIConfigurationReaderTester {
-    URL testFile = getClass().getResource("/testFile.txt");
+    URL testFile = getClass().getResource("/testFileAPIWithParameters.txt");
     URL testFileWithMissingParameters = getClass().getResource("/testFileWithMissingParameters.txt");
     URL testFileEmpty = getClass().getResource("/testFileEmpty.txt");
 

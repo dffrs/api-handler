@@ -1,5 +1,0 @@
-host -> www.somexample.com
-rapid_api_host -> www.rapid.somexample.com
-rapid_api_key -> someKey
-header -> someHeader
-endpoint -> someEndpoint

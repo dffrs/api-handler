@@ -109,6 +109,16 @@ public final class APIConfigurationReader {
     }
 
     /**
+     * Public method to return the current Configuration Options file
+     * being used.
+     *
+     * @return String representing the path.
+     */
+    public String getFilePath() {
+        return pathToConfFile;
+    }
+
+    /**
      * Public method that is responsible to load API configuration options through the specified file path,
      * given when {@link APIConfigurationReader} instance was created.
      * It compares each element read to {@link #confParameter} entries. Everytime it fails to map

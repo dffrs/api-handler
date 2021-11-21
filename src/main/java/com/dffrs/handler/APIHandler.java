@@ -8,13 +8,11 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.PatternSyntaxException;
 
 public final class APIHandler {
@@ -26,10 +24,7 @@ public final class APIHandler {
      * Instance of {@link APIHandler}, based on Singleton Code Design.
      */
     private static APIHandler instance;
-    /**
-     * Path to the API Configuration Options file.
-     */
-    private static String CONF_FILE;
+
     /**
      * Map used to keep all the API Configuration Options loaded in memory.
      * Used in {@link #getAPIParameterBy(String)} method.
@@ -46,15 +41,9 @@ public final class APIHandler {
      */
     private static final int INITIAL_VALUE_FOR_CACHE = 5;
 
-    static {
-        try {
-            CONF_FILE = Objects.requireNonNull(APIHandler.class.getResource("/config.handler")).toURI().getPath();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            throw new NullPointerException("ERROR: Configuration Option file not found.\n");
-        }
+    private static APIConfigurationReader reader;
 
+    static {
         cache = new LRUCache<>(INITIAL_VALUE_FOR_CACHE);
     }
 
@@ -152,23 +141,23 @@ public final class APIHandler {
      */
     private void initReader() {
         try {
-            configurations = APIConfigurationReader.getInstance(CONF_FILE).getConfigurations();
+            configurations = reader.getConfigurations();
 
         } catch (FileNotFoundException | PatternSyntaxException | ArrayIndexOutOfBoundsException |
                  IllegalStateException e) {
             String message;
             if (e.getClass().equals(FileNotFoundException.class))
                 message = "ERROR: Configuration Options File was not found. " +
-                        "Check " + CONF_FILE;
+                        "Check " + reader.getFilePath();
             else if (e.getClass().equals(ArrayIndexOutOfBoundsException.class))
                 message = "ERROR: Configuration Options File have parameters with empty values. " +
-                        "Check " + CONF_FILE;
+                        "Check " + reader.getFilePath();
                 else if (e.getClass().equals(IllegalStateException.class))
                     message = "ERROR: Configuration Options not detected inside specified file. " +
-                            "Check " + CONF_FILE;
+                            "Check " + reader.getFilePath();
                     else
                         message = "ERROR: Configuration Options File uses the wrong delimiter. " +
-                                "Check " +APIConfigurationReader.DELIMITER + " and " + CONF_FILE;
+                                "Check " +APIConfigurationReader.DELIMITER + " and " + reader.getFilePath();
 
             System.err.println(message + "\n\n" + e.getClass()+": "+e.getMessage());
             configurations = null;
@@ -224,11 +213,15 @@ public final class APIHandler {
     /**
      * Public Static Factory method to instantiate an {@link APIHandler} object.
      *
+     * @param pathToFile String representing the path to the Configuration Options File.
+     *                   Will be used on a APIConfigurationReader's instance.
      * @return #APIConfigurationReader instance.
      */
-    public static APIHandler getInstance() {
-        if (instance == null)
+    public static APIHandler getInstance(String pathToFile) {
+        if (instance == null || !reader.getFilePath().equals(pathToFile)) {
+            reader = APIConfigurationReader.getInstance(pathToFile);
             instance = new APIHandler();
+        }
         return instance;
     }
 }
