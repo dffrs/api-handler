@@ -16,6 +16,15 @@
     <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
 
+  <!-- ADDED -->
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub OWNER Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/dffrs/api-handler</url>
+    </repository>
+  </distributionManagement>
+
   <dependencies>
     <!-- ADDED -->
     <dependency>
@@ -46,8 +55,32 @@
   </dependencies>
 
   <build>
+    <!--ADDED-->
+    <resources>
+      <resource>
+        <directory>JavaDocs</directory>
+      </resource>
+    </resources>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
+
+        <!--ADDED-->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <reportOutputDirectory>JavaDocs</reportOutputDirectory>
+          </configuration>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
