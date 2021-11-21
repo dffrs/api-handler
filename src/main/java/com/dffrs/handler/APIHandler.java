@@ -41,6 +41,9 @@ public final class APIHandler {
      */
     private static final int INITIAL_VALUE_FOR_CACHE = 5;
 
+    /**
+     * {@link APIConfigurationReader} instance. Useful here: {@link #getInstance(String)}.
+     */
     private static APIConfigurationReader reader;
 
     static {
