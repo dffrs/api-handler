@@ -55,12 +55,6 @@
   </dependencies>
 
   <build>
-    <!--ADDED-->
-    <resources>
-      <resource>
-        <directory>JavaDocs</directory>
-      </resource>
-    </resources>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
 
@@ -69,7 +63,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
-            <reportOutputDirectory>JavaDocs</reportOutputDirectory>
+            <reportOutputDirectory>src/main/resources/</reportOutputDirectory>
           </configuration>
           <executions>
             <execution>
