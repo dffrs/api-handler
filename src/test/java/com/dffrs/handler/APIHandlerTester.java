@@ -75,4 +75,17 @@ public class APIHandlerTester {
         Assert.assertNotEquals(response, response3);
 
     }
+
+    @Test
+    public void makeAPICallWithParametersWithCacheTest() throws UnirestException {
+        HttpResponse<JsonNode> response;
+        HttpResponse<JsonNode> response2;
+
+        response = handler.makeAPIRequest(new APIHandler.Request(List.of("q"), List.of("Kendrick Lamar")));
+        Assert.assertEquals(200, response.getStatus());
+
+        response2 = handler.makeAPIRequest(new APIHandler.Request(List.of("q"), List.of("Kendrick Lamar")));
+
+        Assert.assertEquals(response, response2);
+    }
 }

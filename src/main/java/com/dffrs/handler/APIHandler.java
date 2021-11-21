@@ -123,7 +123,8 @@ public final class APIHandler {
                 throw new IllegalStateException();
             }
 
-            String query = "";
+            // This is necessary for API with param=value URL queries
+            String query = "?";
             for (int i = 0; i != params.size(); i++) {
                 query = query.concat(encodeString(params.get(i), values.get(i)) + "&");
             }
