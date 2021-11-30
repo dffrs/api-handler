@@ -1,6 +1,0 @@
-host -> https://car-code.p.rapidapi.com
-rapid_api_host -> car-code.p.rapidapi.com
-rapid_api_key -> 4e565c0245msh438d82beedde2c5p118cfcjsn90a4f82d3f02
-header -> x-rapidapi-host
-header -> x-rapidapi-key
-endpoint -> obd2
