@@ -15,16 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class APIHandlerTester {
-    URL testFile = getClass().getResource("/testFile.txt");
+    URL APIWithNoParameters = getClass().getResource("/testFileAPIWithNoParameters.txt");
+    URL APIWithParameters = getClass().getResource("/testFileAPIWithParameters.txt");
 
     APIHandler handler;
-    String testFilePath = "";
+    String testFilePathWithParameters = "";
+    String testFilePathWithNoParameters = "";
 
     @Before
     public void init() throws URISyntaxException {
-        testFilePath = testFile.toURI().getPath();
+        testFilePathWithNoParameters = APIWithNoParameters.toURI().getPath();
+        testFilePathWithParameters = APIWithParameters.toURI().getPath();
 
-        handler = APIHandler.getInstance();
+        // Default: API With no Parameters
+        handler = APIHandler.getInstance(testFilePathWithNoParameters);
     }
 
     @Test
@@ -74,5 +78,19 @@ public class APIHandlerTester {
         Assert.assertEquals(response, response2);
         Assert.assertNotEquals(response, response3);
 
+    }
+
+    @Test
+    public void makeAPICallWithParametersWithCacheTest() throws UnirestException {
+        HttpResponse<JsonNode> response;
+        HttpResponse<JsonNode> response2;
+        handler = APIHandler.getInstance(testFilePathWithParameters);
+
+        response = handler.makeAPIRequest(new APIHandler.Request(List.of("q"), List.of("Kendrick Lamar")));
+        Assert.assertEquals(200, response.getStatus());
+
+        response2 = handler.makeAPIRequest(new APIHandler.Request(List.of("q"), List.of("Kendrick Lamar")));
+
+        Assert.assertEquals(response, response2);
     }
 }

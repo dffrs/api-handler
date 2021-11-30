@@ -109,6 +109,16 @@ public final class APIConfigurationReader {
     }
 
     /**
+     * Public method to return the current Configuration Options file
+     * being used.
+     *
+     * @return String representing the path.
+     */
+    public String getFilePath() {
+        return pathToConfFile;
+    }
+
+    /**
      * Public method that is responsible to load API configuration options through the specified file path,
      * given when {@link APIConfigurationReader} instance was created.
      * It compares each element read to {@link #confParameter} entries. Everytime it fails to map
@@ -122,7 +132,7 @@ public final class APIConfigurationReader {
      * @throws FileNotFoundException Whenever the Configuration Options file was not found.
      */
     public Map<String, String> getConfigurations() throws FileNotFoundException, PatternSyntaxException,
-            ArrayIndexOutOfBoundsException {
+            ArrayIndexOutOfBoundsException, IllegalStateException {
         Map<String, String> aux = new HashMap<>();
         try (Scanner scanner = new Scanner(new File(this.pathToConfFile))) {
             String temp;
@@ -150,7 +160,7 @@ public final class APIConfigurationReader {
         }
 
         if (aux.isEmpty())
-            throw new IllegalStateException("ERROR: Configuration Options not detected inside specified file.\n");
+            throw new IllegalStateException();
         return aux;
     }
 }
